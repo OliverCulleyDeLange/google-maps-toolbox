@@ -28,9 +28,7 @@ function changeMetric(m) {
     }
     
 }
-$(document).ready(DocLoaded);
-
-function DocLoaded() {	
+function initMap() {
     metric = document.getElementById("myonoffswitch").checked;
     map = new google.maps.Map($("#map_div")[0], 
         {
