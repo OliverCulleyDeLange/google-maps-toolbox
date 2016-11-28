@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Google Maps Toolbox - Oliver de Lange</title>
+    <meta name="description" content="Google Maps Toolbox - A set of hopefully useful tools for measuring lines, polylines, polygons and circles on a map">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            margin:0;
+            padding:0;
+        }
+        
+        .floatL {
+            float: left;
+        }
+
+        #map_div {
+            height:100%;            
+        }
+
+        .infoBox {
+            border: 2px solid black;
+            margin-top: 8px;
+            background:#333;
+            color:#FFF;
+            font-family: "Courier New", Courier, monospace;
+            font-size:12px;
+            padding: .5em 1em;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            text-shadow:0 -1px #000000;
+            -webkit-box-shadow: 0 0  8px #000;
+            box-shadow: 0 0 8px #000;
+            z-index: 99999;
+        }
+
+        .toolbox_container {
+            width: 30%;
+            height: 100%;
+            background-color: #000;
+        }
+        
+        #toolbox {
+            border: #4d9ed8 double 3px;
+            margin: 5px;
+            background-color: #fbf9ee;
+            font-family: "Courier New", Courier, monospace;
+            padding: 3px;
+            padding-bottom: 20px;
+            min-width: 450px;
+            width: 250px;
+            min-height: 450px;
+            z-index: 99;
+            position: absolute;
+            left: 70px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4d9ed8;
+            margin-bottom: 2px;
+        }
+        
+        h5 {
+            text-align: center;
+            color: cornflowerblue;
+            margin-top: 2px;
+        }
+        
+        h6 {
+            text-align: center;
+            margin: 0px;
+        }
+        
+        .polygon {
+            border: #5DC7A0 solid 1px;
+            margin: 3px;
+            padding-left: 2px;
+        }
+        
+        .circle {
+            border: #4d9ed8 solid 1px;
+            margin: 3px;
+            padding-left: 2px;
+        }
+        
+        p {
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        
+        .result {
+            color: #4d9ed8;
+        }
+        
+        .group div {
+            padding: 0px !important;
+        }
+        
+        .group h6 {
+            padding: 0px 0px 0px 2.2em !important;
+            background: cornflowerblue !important;
+            color: #fbf9ee;
+        }
+        
+        /*Switch Styling*/
+            .onoffswitch {
+    position: relative; width: 107px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+    }
+    .onoffswitch-checkbox {
+    display: none;
+    }
+    .onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 50px;
+    }
+    .onoffswitch-inner {
+    width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+    }
+    .onoffswitch-inner:before, .onoffswitch-inner:after {
+    float: left; width: 50%; height: 25px; padding: 0; line-height: 25px;
+    font-size: 16px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+    }
+    .onoffswitch-inner:before {
+    content: "Metric";
+    padding-left: 12px;
+    background-color: #4D9ED8; color: #FBF9EE;
+    }
+    .onoffswitch-inner:after {
+    content: "Imperial";
+    padding-right: 12px;
+    background-color: #FBF9EE; color: #4D9ED8;
+    text-align: right;
+    }
+    .onoffswitch-switch {
+    width: 24px; margin: 0.5px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 50px;
+    position: absolute; top: 0; bottom: 0; right: 78px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+    }
+    .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+    }
+    .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px;
+    }
+    </style>
+    <!-- Google Maps V3 -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=geometry&v=3&sensor=false" > </script>
+    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/src/infobox.js"></script>
+    <!-- JQuery -->
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <!-- My Maps Javascript -->
+    <script type="text/javascript" src="maps.js"></script>
+    
+     <script>
+        $(function() {
+            $( "#toolbox" ).resizable();
+            $( "#toolbox" ).draggable();
+            $( "#toolbox" ).accordion({
+                header: "> div > h6",
+                collapsible: true,
+                heightStyle: "content"
+             }).sortable({
+                axis: "y",
+                handle: "h6",
+                stop: function( event, ui ) {
+                    // IE doesn't register the blur when sorting
+                    // so trigger focusout handlers to remove .ui-state-focus
+                    ui.item.children( "h3" ).triggerHandler( "focusout" );
+                }
+             });
+        });
+</script>
+
+</head>
+<!-- START BODY -->
+<body>
+        <div id="toolbox">
+            <h1>Google Maps Toolbox</h1>
+            <h5>Draggable, resizable and Hopefully useful</h5>
+            <div class="onoffswitch">
+                <input type="checkbox" onclick="changeMetric(this.checked);" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                <label class="onoffswitch-label" for="myonoffswitch">
+                <div class="onoffswitch-inner"></div>
+                <div class="onoffswitch-switch"></div>
+                </label>
+            </div> 
+            <div class="group">
+                <h6>Distance & Area of a Polygon</h6>
+                <div>
+                    <p>Left click the map to place markers, right click to remove. Measure the distance of the path and the area of the created polygon. Click the first placed marker to close the polygon, then you can edit the existing polygon, remove it (right click) or make a new one!</p>
+                    <p>The green line that closes the polygon off is NOT included in the Length Measurement, it is there to show you the polygon being used for the area measures. </p>
+                    <div class="measure polygon">
+                        Length of Polygon
+                        <div id="lop" class="result"></div>
+                    </div>
+                    <div class="measure polygon">
+                        Area of Polygon
+                        <div id="aop" class="result"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="group">
+                <h6>Circumference and Area of a Circle</h6>
+                <div>
+                    <p>Right click the map to create a circle Right click the circle to remove it. Then drag it around and edit its size!</p>
+                    <div class="measure circle">
+                        Circumference of Circle
+                        <div id="coc" class="result"></div>
+                    </div>
+                    <div class="measure circle">
+                        Area of Circle
+                        <div id="aoc" class="result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map_div"></div>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-40491769-1', 'auto');
+          ga('send', 'pageview');
+        </script>
+</body>
+</html> 

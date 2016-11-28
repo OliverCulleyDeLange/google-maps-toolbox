@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&v=3&sensor=false" ></script>
+        <style type="text/css">
+            html {height: 100%;}
+            body {
+                height: 100%;
+                margin:0;
+            }
+            #map_div {height:100%;}
+        </style>
+    </head>
+    <body>
+        <div id="map_div"></div>  
+        <script>
+            //Code for creating the map object in the DIV with ID = "map_dav"
+            map = new google.maps.Map(document.getElementById("map_div"), 
+                {
+                    center: new google.maps.LatLng(53.148996, -1.448909),
+                    zoom: 10,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                }
+            );
+        </script>
+    </body>
+</html> 
